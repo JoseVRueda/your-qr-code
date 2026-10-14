@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Genera un código QR al instante, en tu navegador, sin cuentas."
+    />
+    <title>Tu código QR</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%231c1917'/%3E%3Cpath fill='%23fff' d='M2 2h5v5H2zm1 1v3h3V3zM9 2h5v5H9zm1 1v3h3V3zM2 9h5v5H2zm1 1v3h3v-3zM10 9h2v2h-2zm3 0h1v1h-1zm-3 3h1v2h-1zm2 1h2v2h-2z'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="header">
+        <p class="eyebrow">En tu navegador</p>
+        <h1>Tu código QR</h1>
+        <p class="lede">
+          Escribe un enlace y el código aparece al instante. Nada sale de este
+          navegador: no hay cuentas ni se guarda nada.
+        </p>
+      </header>
+
+      <div class="workspace">
+        <form id="composer" class="composer" autocomplete="off">
+          <div class="inputs">
+          <fieldset class="types">
+            <legend>Tipo de contenido</legend>
+            <div class="type-list">
+              <label class="type">
+                <input type="radio" name="type" value="url" checked />
+                <span>Enlace</span>
+              </label>
+              <label class="type">
+                <input type="radio" name="type" value="text" />
+                <span>Texto</span>
+              </label>
+              <label class="type">
+                <input type="radio" name="type" value="wifi" />
+                <span>Wi-Fi</span>
+              </label>
+              <label class="type">
+                <input type="radio" name="type" value="email" />
+                <span>Correo</span>
+              </label>
+              <label class="type">
+                <input type="radio" name="type" value="phone" />
+                <span>Teléfono</span>
+              </label>
+            </div>
+          </fieldset>
+
+          <div class="panel" data-type="url">
+            <label class="field">
+              <span>Enlace</span>
+              <input
+                id="url"
+                type="text"
+                inputmode="url"
+                spellcheck="false"
+                placeholder="ejemplo.com o https://…"
+                autofocus
+              />
+            </label>
+          </div>
+
+          <div class="panel" data-type="text" hidden>
+            <label class="field">
+              <span>Texto</span>
+              <textarea
+                id="text"
+                rows="4"
+                placeholder="Lo que quieras codificar"
+              ></textarea>
+            </label>
+          </div>
+
+          <div class="panel" data-type="wifi" hidden>
+            <label class="field">
+              <span>Nombre de la red</span>
+              <input id="ssid" type="text" spellcheck="false" autocomplete="off" />
+            </label>
+            <label class="field">
+              <span>Contraseña</span>
+              <input
+                id="password"
+                type="text"
+                spellcheck="false"
+                autocomplete="off"
+              />
+            </label>
+            <label class="field">
+              <span>Seguridad</span>
+              <select id="encryption">
+                <option value="WPA">WPA/WPA2</option>
+                <option value="WEP">WEP</option>
+                <option value="nopass">Sin contraseña</option>
+              </select>
+            </label>
+            <label class="check">
+              <input id="hidden-network" type="checkbox" />
+              <span>Red oculta</span>
+            </label>
+          </div>
+
+          <div class="panel" data-type="email" hidden>
+            <label class="field">
+              <span>Correo</span>
+              <input
+                id="email"
+                type="email"
+                spellcheck="false"
+                placeholder="nombre@correo.com"
+              />
+            </label>
+          </div>
+
+          <div class="panel" data-type="phone" hidden>
+            <label class="field">
+              <span>Teléfono</span>
+              <input
+                id="phone"
+                type="tel"
+                spellcheck="false"
+                placeholder="+34 600 000 000"
+              />
+            </label>
+          </div>
+          </div>
+
+          <fieldset class="options">
+            <legend>Ajustes</legend>
+            <div class="option-list">
+            <label class="field">
+              <span>Tamaño <output id="size-value">288 px</output></span>
+              <input id="size" type="range" min="160" max="640" step="16" value="288" />
+            </label>
+            <label class="field">
+              <span>Corrección de errores</span>
+              <select id="level">
+                <option value="L">L — baja, cabe más texto</option>
+                <option value="M" selected>M — media</option>
+                <option value="Q">Q — alta</option>
+                <option value="H">H — máxima</option>
+              </select>
+            </label>
+            <div class="colors">
+              <label class="field color-field">
+                <span>Módulos</span>
+                <input id="foreground" type="color" value="#1c1917" />
+              </label>
+              <label class="field color-field">
+                <span>Fondo</span>
+                <input id="background" type="color" value="#ffffff" />
+              </label>
+            </div>
+            </div>
+          </fieldset>
+        </form>
+
+        <section class="preview" aria-label="Vista previa">
+          <div class="stage" id="stage">
+            <p id="empty" class="empty">Escribe un contenido para ver el código.</p>
+            <canvas id="canvas" width="280" height="280" hidden></canvas>
+          </div>
+          <p id="warning" class="warning" hidden></p>
+          <p id="error" class="error" role="alert" hidden></p>
+          <p id="payload" class="payload" hidden>
+            <span>Se codifica</span>
+            <code id="payload-text"></code>
+          </p>
+          <div class="actions">
+            <button id="png" type="button" disabled>Descargar PNG</button>
+            <button id="svg" type="button" class="secondary" disabled>Descargar SVG</button>
+            <button id="copy" type="button" class="secondary" disabled>Copiar imagen</button>
+          </div>
+          <p id="status" class="status" role="status"></p>
+        </section>
+      </div>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
