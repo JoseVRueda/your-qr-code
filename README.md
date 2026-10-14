@@ -78,4 +78,4 @@ Issues and pull requests are welcome. Please keep changes focused and match exis
 
 ## License
 
-This project is open source. Add a `LICENSE` file in the repository root if you have not chosen one yet (MIT is a common choice).
+[MIT](LICENSE)
