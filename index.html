@@ -39,7 +39,7 @@
     />
     <meta name="twitter:image" content="%VITE_SITE_URL%/og.png" />
     <meta name="twitter:image:alt" content="Generador de código QR gratis en el navegador" />
-    <script type="application/ld+json">
+    <script id="ld-app" type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "WebApplication",
@@ -57,7 +57,7 @@
         "image": "%VITE_SITE_URL%/og.png"
       }
     </script>
-    <script type="application/ld+json">
+    <script id="ld-faq" type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "FAQPage",
@@ -110,13 +110,24 @@
       href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop stop-color='%237c3aed'/%3E%3Cstop offset='1' stop-color='%23c084fc'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='16' height='16' rx='4' fill='url(%23g)'/%3E%3Cpath fill='%23fff' d='M2 2h5v5H2zm1 1v3h3V3zM9 2h5v5H9zm1 1v3h3V3zM2 9h5v5H2zm1 1v3h3v-3zM10 9h2v2h-2zm3 0h1v1h-1zm-3 3h1v2h-1zm2 1h2v2h-2z'/%3E%3C/svg%3E"
     />
     <link rel="stylesheet" href="/src/style.css" />
+    <noscript>
+      <style>
+        html:not(.i18n-ready) body {
+          visibility: visible;
+        }
+      </style>
+    </noscript>
   </head>
   <body>
     <main class="page">
+      <div class="lang" role="group" data-i18n-aria-label="languageLabel" aria-label="Idioma">
+        <button type="button" data-locale="es" lang="es" aria-pressed="true">Español</button>
+        <button type="button" data-locale="en" lang="en" aria-pressed="false">English</button>
+      </div>
       <header class="header">
-        <p class="eyebrow">En tu navegador</p>
-        <h1>Tu código QR</h1>
-        <p class="lede">
+        <p class="eyebrow" data-i18n="eyebrow">En tu navegador</p>
+        <h1 data-i18n="brand">Tu código QR</h1>
+        <p class="lede" data-i18n="lede">
           Escribe un enlace y el código aparece al instante. Nada sale de este
           navegador: no hay cuentas ni se guarda nada.
         </p>
@@ -126,39 +137,40 @@
         <form id="composer" class="composer" autocomplete="off">
           <div class="inputs">
           <fieldset class="types">
-            <legend>Tipo de contenido</legend>
+            <legend data-i18n="contentType">Tipo de contenido</legend>
             <div class="type-list">
               <label class="type">
                 <input type="radio" name="type" value="url" checked />
-                <span>Enlace</span>
+                <span data-i18n="typeUrl">Enlace</span>
               </label>
               <label class="type">
                 <input type="radio" name="type" value="text" />
-                <span>Texto</span>
+                <span data-i18n="typeText">Texto</span>
               </label>
               <label class="type">
                 <input type="radio" name="type" value="wifi" />
-                <span>Wi-Fi</span>
+                <span data-i18n="typeWifi">Wi-Fi</span>
               </label>
               <label class="type">
                 <input type="radio" name="type" value="email" />
-                <span>Correo</span>
+                <span data-i18n="typeEmail">Correo</span>
               </label>
               <label class="type">
                 <input type="radio" name="type" value="phone" />
-                <span>Teléfono</span>
+                <span data-i18n="typePhone">Teléfono</span>
               </label>
             </div>
           </fieldset>
 
           <div class="panel" data-type="url">
             <label class="field">
-              <span>Enlace</span>
+              <span data-i18n="urlLabel">Enlace</span>
               <input
                 id="url"
                 type="text"
                 inputmode="url"
                 spellcheck="false"
+                data-i18n-placeholder="urlPlaceholder"
                 placeholder="ejemplo.com o https://…"
                 autofocus
               />
@@ -167,10 +179,11 @@
 
           <div class="panel" data-type="text" hidden>
             <label class="field">
-              <span>Texto</span>
+              <span data-i18n="textLabel">Texto</span>
               <textarea
                 id="text"
                 rows="4"
+                data-i18n-placeholder="textPlaceholder"
                 placeholder="Lo que quieras codificar"
               ></textarea>
             </label>
@@ -178,11 +191,11 @@
 
           <div class="panel" data-type="wifi" hidden>
             <label class="field">
-              <span>Nombre de la red</span>
+              <span data-i18n="ssidLabel">Nombre de la red</span>
               <input id="ssid" type="text" spellcheck="false" autocomplete="off" />
             </label>
             <label class="field">
-              <span>Contraseña</span>
+              <span data-i18n="passwordLabel">Contraseña</span>
               <input
                 id="password"
                 type="text"
@@ -191,26 +204,27 @@
               />
             </label>
             <label class="field">
-              <span>Seguridad</span>
+              <span data-i18n="securityLabel">Seguridad</span>
               <select id="encryption">
-                <option value="WPA">WPA/WPA2</option>
-                <option value="WEP">WEP</option>
-                <option value="nopass">Sin contraseña</option>
+                <option value="WPA" data-i18n="encWpa">WPA/WPA2</option>
+                <option value="WEP" data-i18n="encWep">WEP</option>
+                <option value="nopass" data-i18n="encNone">Sin contraseña</option>
               </select>
             </label>
             <label class="check">
               <input id="hidden-network" type="checkbox" />
-              <span>Red oculta</span>
+              <span data-i18n="hiddenNetwork">Red oculta</span>
             </label>
           </div>
 
           <div class="panel" data-type="email" hidden>
             <label class="field">
-              <span>Correo</span>
+              <span data-i18n="emailLabel">Correo</span>
               <input
                 id="email"
                 type="email"
                 spellcheck="false"
+                data-i18n-placeholder="emailPlaceholder"
                 placeholder="nombre@correo.com"
               />
             </label>
@@ -218,11 +232,12 @@
 
           <div class="panel" data-type="phone" hidden>
             <label class="field">
-              <span>Teléfono</span>
+              <span data-i18n="phoneLabel">Teléfono</span>
               <input
                 id="phone"
                 type="tel"
                 spellcheck="false"
+                data-i18n-placeholder="phonePlaceholder"
                 placeholder="+34 600 000 000"
               />
             </label>
@@ -230,28 +245,28 @@
           </div>
 
           <fieldset class="options">
-            <legend>Ajustes</legend>
+            <legend data-i18n="settings">Ajustes</legend>
             <div class="option-list">
             <label class="field">
-              <span>Tamaño <output id="size-value">288 px</output></span>
+              <span><span data-i18n="sizeLabel">Tamaño</span> <output id="size-value">288 px</output></span>
               <input id="size" type="range" min="160" max="640" step="16" value="288" />
             </label>
             <label class="field">
-              <span>Corrección de errores</span>
+              <span data-i18n="levelLabel">Corrección de errores</span>
               <select id="level">
-                <option value="L">L — baja, cabe más texto</option>
-                <option value="M" selected>M — media</option>
-                <option value="Q">Q — alta</option>
-                <option value="H">H — máxima</option>
+                <option value="L" data-i18n="levelL">L — baja, cabe más texto</option>
+                <option value="M" data-i18n="levelM" selected>M — media</option>
+                <option value="Q" data-i18n="levelQ">Q — alta</option>
+                <option value="H" data-i18n="levelH">H — máxima</option>
               </select>
             </label>
             <div class="colors">
               <label class="field color-field">
-                <span>Módulos</span>
+                <span data-i18n="foreground">Módulos</span>
                 <input id="foreground" type="color" value="#1c1917" />
               </label>
               <label class="field color-field">
-                <span>Fondo</span>
+                <span data-i18n="background">Fondo</span>
                 <input id="background" type="color" value="#ffffff" />
               </label>
             </div>
@@ -259,66 +274,66 @@
           </fieldset>
         </form>
 
-        <section class="preview" aria-label="Vista previa">
+        <section class="preview" data-i18n-aria-label="previewLabel" aria-label="Vista previa">
           <div class="stage" id="stage">
-            <p id="empty" class="empty">Escribe un contenido para ver el código.</p>
+            <p id="empty" class="empty" data-i18n="empty">Escribe un contenido para ver el código.</p>
             <canvas id="canvas" width="280" height="280" hidden></canvas>
           </div>
           <p id="warning" class="warning" hidden></p>
           <p id="error" class="error" role="alert" hidden></p>
           <p id="payload" class="payload" hidden>
-            <span>Se codifica</span>
+            <span data-i18n="encoded">Se codifica</span>
             <code id="payload-text"></code>
           </p>
           <div class="actions">
-            <button id="png" type="button" disabled>Descargar PNG</button>
-            <button id="svg" type="button" class="secondary" disabled>Descargar SVG</button>
-            <button id="copy" type="button" class="secondary" disabled>Copiar imagen</button>
+            <button id="png" type="button" data-i18n="downloadPng" disabled>Descargar PNG</button>
+            <button id="svg" type="button" class="secondary" data-i18n="downloadSvg" disabled>Descargar SVG</button>
+            <button id="copy" type="button" class="secondary" data-i18n="copyImage" disabled>Copiar imagen</button>
           </div>
           <p id="status" class="status" role="status"></p>
         </section>
       </div>
 
       <section class="guide" aria-labelledby="how-title">
-        <h2 id="how-title">Cómo funciona</h2>
+        <h2 id="how-title" data-i18n="howTitle">Cómo funciona</h2>
         <ol class="steps">
           <li>
-            <h3>Elige el tipo</h3>
-            <p>Enlace, texto, Wi-Fi, correo o teléfono.</p>
+            <h3 data-i18n="step1Title">Elige el tipo</h3>
+            <p data-i18n="step1Body">Enlace, texto, Wi-Fi, correo o teléfono.</p>
           </li>
           <li>
-            <h3>Escribe el contenido</h3>
-            <p>El código aparece al instante.</p>
+            <h3 data-i18n="step2Title">Escribe el contenido</h3>
+            <p data-i18n="step2Body">El código aparece al instante.</p>
           </li>
           <li>
-            <h3>Descarga PNG o SVG</h3>
-            <p>También puedes copiar la imagen. El código no sale del navegador.</p>
+            <h3 data-i18n="step3Title">Descarga PNG o SVG</h3>
+            <p data-i18n="step3Body">También puedes copiar la imagen. El código no sale del navegador.</p>
           </li>
         </ol>
       </section>
 
       <section class="faq" aria-labelledby="faq-title">
-        <h2 id="faq-title">Preguntas frecuentes</h2>
+        <h2 id="faq-title" data-i18n="faqTitle">Preguntas frecuentes</h2>
         <div class="faq-list">
           <article>
-            <h3>¿Es gratis?</h3>
-            <p>Sí. Puedes crear y descargar el código sin cuenta y sin pago.</p>
+            <h3 data-i18n="faq1q">¿Es gratis?</h3>
+            <p data-i18n="faq1a">Sí. Puedes crear y descargar el código sin cuenta y sin pago.</p>
           </article>
           <article>
-            <h3>¿Se guarda lo que escribo?</h3>
-            <p>No. El código se genera en tu navegador. Nada se envía a un servidor ni se guarda.</p>
+            <h3 data-i18n="faq2q">¿Se guarda lo que escribo?</h3>
+            <p data-i18n="faq2a">No. El código se genera en tu navegador. Nada se envía a un servidor ni se guarda.</p>
           </article>
           <article>
-            <h3>¿Qué puedo codificar?</h3>
-            <p>Un enlace, un texto, una red Wi-Fi, un correo o un teléfono.</p>
+            <h3 data-i18n="faq3q">¿Qué puedo codificar?</h3>
+            <p data-i18n="faq3a">Un enlace, un texto, una red Wi-Fi, un correo o un teléfono.</p>
           </article>
           <article>
-            <h3>¿Qué es la corrección de errores?</h3>
-            <p>Es lo que permite leer el código aunque se tape o se dañe una parte. L cabe más texto; H aguanta más daño y el código queda más denso.</p>
+            <h3 data-i18n="faq4q">¿Qué es la corrección de errores?</h3>
+            <p data-i18n="faq4a">Es lo que permite leer el código aunque se tape o se dañe una parte. L cabe más texto; H aguanta más daño y el código queda más denso.</p>
           </article>
           <article>
-            <h3>¿Por qué importa el contraste?</h3>
-            <p>El lector distingue los módulos oscuros del fondo claro. Si los colores se parecen, el código puede no leerse.</p>
+            <h3 data-i18n="faq5q">¿Por qué importa el contraste?</h3>
+            <p data-i18n="faq5a">El lector distingue los módulos oscuros del fondo claro. Si los colores se parecen, el código puede no leerse.</p>
           </article>
         </div>
       </section>

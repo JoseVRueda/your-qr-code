@@ -1,14 +1,21 @@
+import { applyTranslations, onLocaleChange, t, type MessageKey } from './i18n'
 import {
   buildPayload,
   contrastWarning,
   renderCanvas,
   renderSvg,
+  type ContrastWarning,
   type ErrorLevel,
   type QrInput,
   type QrStyle,
   type QrType,
   type WifiEncryption,
 } from './qr'
+
+applyTranslations()
+onLocaleChange(() => {
+  void refresh()
+})
 
 const form = document.querySelector<HTMLFormElement>('#composer')
 const panels = document.querySelectorAll<HTMLElement>('.panel')
@@ -64,7 +71,7 @@ if (
   !copyButton ||
   !status
 ) {
-  throw new Error('Falta algún elemento de la página.')
+  throw new Error('A page element is missing.')
 }
 
 const ui = {
@@ -122,14 +129,14 @@ ui.form.addEventListener('change', (event) => {
 })
 
 ui.pngButton.addEventListener('click', () => {
-  download('codigo-qr.png', ui.canvas.toDataURL('image/png'))
+  download(t('filePng'), ui.canvas.toDataURL('image/png'))
 })
 
 ui.svgButton.addEventListener('click', () => {
   if (!currentSvg) return
   const blob = new Blob([currentSvg], { type: 'image/svg+xml' })
   const url = URL.createObjectURL(blob)
-  download('codigo-qr.svg', url)
+  download(t('fileSvg'), url)
   window.setTimeout(() => URL.revokeObjectURL(url), 1000)
 })
 
@@ -140,7 +147,7 @@ ui.copyButton.addEventListener('click', () => {
 showPanel('url')
 updateSizeLabel()
 syncWifiFields()
-clearPreview('Escribe un contenido para ver el código.')
+clearPreview(t('empty'))
 
 function scheduleRender(): void {
   window.clearTimeout(timer)
@@ -155,7 +162,7 @@ async function refresh(): Promise<void> {
   const style = readStyle()
 
   if (!payload) {
-    clearPreview(hint ?? 'Escribe un contenido para ver el código.')
+    clearPreview(hint ? t(hint) : t('empty'))
     return
   }
 
@@ -168,7 +175,7 @@ async function refresh(): Promise<void> {
   } catch {
     if (token !== renderToken) return
     currentSvg = ''
-    showFailure('El contenido es demasiado largo para un código QR. Acórtalo.')
+    showFailure(t('tooLong'))
   }
 }
 
@@ -243,7 +250,7 @@ function showPreview(payload: string, style: QrStyle): void {
   ui.payloadBox.hidden = false
   setBusy(false)
 
-  const message = contrastWarning(style.foreground, style.background)
+  const message = contrastMessage(contrastWarning(style.foreground, style.background))
   ui.warning.hidden = !message
   ui.warning.textContent = message ?? ''
 }
@@ -261,7 +268,7 @@ function clearPreview(message: string): void {
   ui.error.hidden = true
   ui.payloadBox.hidden = true
   ui.payloadText.textContent = ''
-  ui.status.textContent = ''
+  clearStatus()
   setBusy(true)
 }
 
@@ -274,7 +281,7 @@ function showFailure(message: string): void {
   ui.payloadBox.hidden = true
   ui.error.hidden = false
   ui.error.textContent = message
-  ui.status.textContent = ''
+  clearStatus()
   setBusy(true)
 }
 
@@ -293,24 +300,39 @@ function download(filename: string, href: string): void {
 
 async function copyImage(): Promise<void> {
   try {
-    if (!navigator.clipboard?.write) throw new Error('Sin portapapeles')
+    if (!navigator.clipboard?.write) throw new Error('Clipboard unavailable')
     const blob = new Promise<Blob>((resolve, reject) => {
       ui.canvas.toBlob((result) => {
         if (result) resolve(result)
-        else reject(new Error('Sin imagen'))
+        else reject(new Error('No image'))
       }, 'image/png')
     })
     await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })])
-    setStatus('Imagen copiada.')
+    setStatus('copied')
   } catch {
-    setStatus('No se pudo copiar. Descarga el PNG.')
+    setStatus('copyFailed')
   }
 }
 
-function setStatus(message: string): void {
-  ui.status.textContent = message
+function contrastMessage(warning: ContrastWarning | null): string | null {
+  const keys: Record<ContrastWarning, MessageKey> = {
+    low: 'contrastLow',
+    darkBackground: 'contrastDark',
+  }
+  return warning ? t(keys[warning]) : null
+}
+
+function setStatus(key: MessageKey): void {
+  ui.status.dataset.i18n = key
+  ui.status.textContent = t(key)
   window.clearTimeout(statusTimer)
   statusTimer = window.setTimeout(() => {
-    ui.status.textContent = ''
+    clearStatus()
   }, 2500)
+}
+
+function clearStatus(): void {
+  delete ui.status.dataset.i18n
+  ui.status.textContent = ''
+  window.clearTimeout(statusTimer)
 }

@@ -24,9 +24,12 @@ export interface QrStyle {
   background: string
 }
 
+export type PayloadHint = 'wifiPassword'
+export type ContrastWarning = 'low' | 'darkBackground'
+
 export interface PayloadResult {
   payload: string
-  hint?: string
+  hint?: PayloadHint
 }
 
 const SCHEME = /^[a-z][a-z0-9+.-]*:/i
@@ -46,7 +49,7 @@ export function buildPayload(input: QrInput): PayloadResult {
   }
 }
 
-export function contrastWarning(foreground: string, background: string): string | null {
+export function contrastWarning(foreground: string, background: string): ContrastWarning | null {
   const fg = relativeLuminance(foreground)
   const bg = relativeLuminance(background)
   if (fg === null || bg === null) return null
@@ -54,12 +57,8 @@ export function contrastWarning(foreground: string, background: string): string 
   const [hi, lo] = fg > bg ? [fg, bg] : [bg, fg]
   const ratio = (hi + 0.05) / (lo + 0.05)
 
-  if (ratio < 4) {
-    return 'El contraste es bajo y puede costar escanear el código.'
-  }
-  if (bg < fg) {
-    return 'El fondo es más oscuro que los módulos. Algunos lectores esperan módulos oscuros sobre fondo claro.'
-  }
+  if (ratio < 4) return 'low'
+  if (bg < fg) return 'darkBackground'
   return null
 }
 
@@ -121,7 +120,7 @@ function buildWifi(input: Extract<QrInput, { type: 'wifi' }>): PayloadResult {
   if (input.encryption !== 'nopass' && password.length === 0) {
     return {
       payload: '',
-      hint: 'Añade la contraseña o elige «Sin contraseña».',
+      hint: 'wifiPassword',
     }
   }
 
